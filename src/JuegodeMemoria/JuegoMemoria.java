@@ -50,7 +50,7 @@ public class JuegoMemoria {
         cartaRevelada = new boolean[filas][columnas];
         puntosJ1 = 0;
         puntosJ2 = 0;
-        turnoJ1 = false;
+        turnoJ1 = true;
         jugadores=new Jugador[2];
     }
     
@@ -82,7 +82,19 @@ public class JuegoMemoria {
         }
     }
     
+     public String getTurnoActual(){
+    return turnoJ1 ? "Jugador 1" : "Jugador 2";
+    }
+    
+    public boolean isTurnoJ1() {
+    return turnoJ1;
+    }
+    
     public boolean pareja(int fila1, int columna1, int fila2, int columna2){
+        if ((fila1 == fila2 && columna1 == columna2) || cartaRevelada[fila1][columna1] || cartaRevelada[fila2][columna2]) {
+            return false;
+        }
+        
         if(tablero[fila1][columna1].equals(tablero[fila2][columna2])){
             cartaRevelada[fila1][columna1]=true;
             cartaRevelada[fila2][columna2]=true;
