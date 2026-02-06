@@ -5,10 +5,16 @@
  */
 package JuegodeMemoria;
 
+import JuegodeMemoria.ui.MainFrame;
+
 /**
  *
  * @author Fabio Sierra
  */
 public class MainApp {
-    
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(() ->  {
+            new MainFrame().setVisible(true);
+        });
+    }
 }
