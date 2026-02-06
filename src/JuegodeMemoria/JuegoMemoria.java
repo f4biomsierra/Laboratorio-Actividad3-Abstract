@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class JuegoMemoria {
+public class JuegoMemoria{
     private final int filas = 6;
     private final int columnas = 6;
     private final int totalParejas = (filas * columnas) / 2;
