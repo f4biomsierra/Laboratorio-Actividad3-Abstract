@@ -23,7 +23,7 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     private int puntosJ1;
     private int puntosJ2;
     private boolean turnoJ1;
-    private Jugador[] jugadores;
+    Jugador[] jugadores;
 
     public JuegoMemoria() {
         nombresImagenes = new ArrayList<>(Arrays.asList(
@@ -54,7 +54,6 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
         jugadores=new Jugador[2];
     }
     
-    
     public void agregarJugadores(String player1, String player2){
         Jugador Player1= new Jugador(player1);
         Jugador Player2= new Jugador(player2);
@@ -63,10 +62,14 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
         
     }
     
-    
+    public String getNombreJugador(int index){
+        if (jugadores == null || index < 0 || index >= jugadores.length || jugadores[index] == null) {
+            return "Jugador " + (index + 1);
+        }
+        return jugadores[index].getNombre();
+    }
     public void generarTablero(){
         ArrayList<String> parejas = new ArrayList<>();
-
         for (String nombre : nombresImagenes) {
             parejas.add(nombre);
             parejas.add(nombre);
@@ -83,7 +86,7 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     }
     
      public String getTurnoActual(){
-    return turnoJ1 ? "Jugador 1" : "Jugador 2";
+    return turnoJ1 ? getNombreJugador(0) : getNombreJugador(1);
     }
     
     public boolean isTurnoJ1() {
