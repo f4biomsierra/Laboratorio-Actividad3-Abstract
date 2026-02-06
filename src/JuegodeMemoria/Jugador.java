@@ -10,5 +10,14 @@ package JuegodeMemoria;
  * @author Fabio Sierra
  */
 public class Jugador {
+    private String nombre;
+    private int cant_aciertos;
     
+    public Jugador(String nombre){
+        this.nombre=nombre;
+    }
+    
+    public void agregarAciertos(){
+        cant_aciertos++;
+    }
 }
