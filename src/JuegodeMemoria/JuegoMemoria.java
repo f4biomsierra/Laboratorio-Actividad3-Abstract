@@ -107,6 +107,7 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
             else puntosJ2++;
             return true;
         } else {
+            cambiarTurno();
             turnoJ1 = !turnoJ1;
             return false;
         }
@@ -159,23 +160,39 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     
     @Override
     public void iniciarJuego() {
-        
+        this.puntosJ1 = 0;
+        this.puntosJ2 = 0;
+        this.turnoJ1 = true;
+        generarTablero();
     }
 
     @Override
     public void cambiarTurno() {
-        
+        this.turnoJ1 = !this.turnoJ1;
     }
 
     @Override
     public void finalizarJuego() {
-        
+        if (juegoTerminado()) {
+        String ganador = (puntosJ1 > puntosJ2) ? jugadores[0].getNombre() : jugadores[1].getNombre();
+        if (puntosJ1 == puntosJ2) System.out.println("¡Empate!");
+        else System.out.println("El ganador es: " + ganador);
+    }
     }
 
     @Override
     public boolean verificarParejas(Carta carta1, Carta carta2) {
+       if (carta1 == carta2) return false;
+
+    if (carta1.getIdImagen() == carta2.getIdImagen()) {
+        if (turnoJ1) puntosJ1++;
+        else puntosJ2++;
+        return true;
+    } else {
+        cambiarTurno();
         return false;
-    }
+    } 
+}
 
     @Override
     public boolean juegoTerminado() {
