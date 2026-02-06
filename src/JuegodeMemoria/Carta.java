@@ -15,7 +15,7 @@ public abstract class Carta extends JButton {
     protected ImageIcon parteFrontal;
     protected ImageIcon parteTrasera;
     
-    public Carta(String idImagen, boolean cartaRevelada, ImageIcon parteFrontal, ImageIcon parteTrasera){
+    public Carta(String idImagen, ImageIcon parteFrontal, ImageIcon parteTrasera){
         this.idImagen=idImagen;
         this.parteTrasera=parteTrasera;
         this.parteFrontal=parteFrontal;
