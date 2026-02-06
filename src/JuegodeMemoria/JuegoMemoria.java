@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-/**
- *
- * @author Fabio Sierra
- */
+import javax.swing.*;
+import java.awt.*;
+
+
 public class JuegoMemoria {
     private final int filas = 6;
     private final int columnas = 6;
@@ -23,6 +23,7 @@ public class JuegoMemoria {
     private int puntosJ1;
     private int puntosJ2;
     private boolean turnoJ1;
+    private Jugador[] jugadores;
 
     public JuegoMemoria() {
         nombresImagenes = new ArrayList<>(Arrays.asList(
@@ -50,7 +51,18 @@ public class JuegoMemoria {
         puntosJ1 = 0;
         puntosJ2 = 0;
         turnoJ1 = false;
+        jugadores=new Jugador[2];
     }
+    
+    
+    private void agregarJugadores(String player1, String player2){
+        Jugador Player1= new Jugador(player1);
+        Jugador Player2= new Jugador(player2);
+        jugadores[0]=Player1;
+        jugadores[1]=Player2;
+        
+    }
+    
     
     public void generarTablero(){
         ArrayList<String> parejas = new ArrayList<>();
