@@ -55,7 +55,7 @@ public class JuegoMemoria {
     }
     
     
-    private void agregarJugadores(String player1, String player2){
+    public void agregarJugadores(String player1, String player2){
         Jugador Player1= new Jugador(player1);
         Jugador Player2= new Jugador(player2);
         jugadores[0]=Player1;

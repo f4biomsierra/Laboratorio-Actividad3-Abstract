@@ -10,6 +10,7 @@ public class LoginPanel extends JPanel {
     private MainFrame frame;
     private JuegoMemoria juego;
     public LoginPanel(MainFrame frame) {
+        juego=new JuegoMemoria();
         this.frame = frame;
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -51,6 +52,7 @@ public class LoginPanel extends JPanel {
         if(txtPlayer1.getText().isBlank() || txtPlayer2.getText().isBlank()) {
             JOptionPane.showMessageDialog(this, "Debe ingresar ambos usuario para poder inciar el juego");
         } else {
+            juego.agregarJugadores(txtPlayer1.getText(), txtPlayer2.getText());
             JOptionPane.showMessageDialog(this, "Juego inicio");
             this.frame.showGame();
         }
