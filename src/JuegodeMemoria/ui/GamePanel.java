@@ -5,15 +5,11 @@ import java.awt.*;
 
 public class GamePanel extends JPanel {
     public GamePanel(){
-        GridBagConstraints gbc = new GridBagConstraints();
+        setLayout(new BorderLayout());
         JLabel title = new JLabel("MEMORAMA");
         title.setFont(new Font("Arial", Font.BOLD, 26));
-
-
-        gbc.gridwidth = 1;
-        gbc.gridx = 0; gbc.gridy = 0;
-
-        add(title, gbc);
+        add(title, BorderLayout.NORTH);
+        add(new TableroPanel(), BorderLayout.CENTER);
     }
 
 
