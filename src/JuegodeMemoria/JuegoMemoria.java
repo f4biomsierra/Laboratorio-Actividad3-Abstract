@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class JuegoMemoria{
+public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     private final int filas = 6;
     private final int columnas = 6;
     private final int totalParejas = (filas * columnas) / 2;
@@ -50,7 +50,7 @@ public class JuegoMemoria{
         cartaRevelada = new boolean[filas][columnas];
         puntosJ1 = 0;
         puntosJ2 = 0;
-        turnoJ1 = false;
+        turnoJ1 = true;
         jugadores=new Jugador[2];
     }
     
@@ -82,7 +82,19 @@ public class JuegoMemoria{
         }
     }
     
+     public String getTurnoActual(){
+    return turnoJ1 ? "Jugador 1" : "Jugador 2";
+    }
+    
+    public boolean isTurnoJ1() {
+    return turnoJ1;
+    }
+    
     public boolean pareja(int fila1, int columna1, int fila2, int columna2){
+        if ((fila1 == fila2 && columna1 == columna2) || cartaRevelada[fila1][columna1] || cartaRevelada[fila2][columna2]) {
+            return false;
+        }
+        
         if(tablero[fila1][columna1].equals(tablero[fila2][columna2])){
             cartaRevelada[fila1][columna1]=true;
             cartaRevelada[fila2][columna2]=true;
@@ -105,10 +117,6 @@ public class JuegoMemoria{
         return pareja(fila1, columna1, fila2, columna2);
     }
     
-    public boolean terminarJuego(){
-        return (puntosJ1+puntosJ2) == totalParejas; 
-    }
-
     public int getPuntosJ1() {
         return puntosJ1;
     }
@@ -144,5 +152,30 @@ public class JuegoMemoria{
 
     public List<String> getNombresImagenes(){
         return Collections.unmodifiableList(nombresImagenes);
+    }
+    
+    @Override
+    public void iniciarJuego() {
+        
+    }
+
+    @Override
+    public void cambiarTurno() {
+        
+    }
+
+    @Override
+    public void finalizarJuego() {
+        
+    }
+
+    @Override
+    public boolean verificarParejas(Carta carta1, Carta carta2) {
+        return false;
+    }
+
+    @Override
+    public boolean juegoTerminado() {
+        return (puntosJ1+puntosJ2) == totalParejas; 
     }
 }
