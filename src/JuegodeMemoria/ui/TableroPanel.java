@@ -1,15 +1,12 @@
 package JuegodeMemoria.ui;
 
-import JuegodeMemoria.JuegoMemoria;
-import JuegodeMemoria.TableroListener;
-
+import JuegodeMemoria.*;
 import javax.swing.*;
 import java.awt.*;
 
 public class TableroPanel extends JPanel {
 
-    private JButton[][] botones = new JButton[6][6];
-    private ImageIcon[][] iconosFrente = new ImageIcon[6][6];
+    private Carta[][] cartas = new Carta[6][6];
     private final int TAMANO_CASILLA = 80;
     private final JuegoMemoria juego;
     private final TableroListener listener;
@@ -49,42 +46,58 @@ public class TableroPanel extends JPanel {
                     String imagen = juego.getNombreImagenEnPosicion(i, j);
                     System.out.println(imagen);
 
-                    Image img = new ImageIcon(
-                            getClass().getResource("/Recursos/" + imagen)
-                    ).getImage();
+                    ImageIcon iconoFrente = null;
+                    ImageIcon iconoTrasera = null;
+                    
+                    try {
+                        Image img = new ImageIcon(
+                                getClass().getResource("/Recursos/" + imagen)
+                        ).getImage();
 
-                    if (img == null) {
-                        throw new Exception("Imagen no encontrada: " + imagen);
+                        if (img == null) {
+                            throw new Exception("Imagen no encontrada: " + imagen);
+                        }
+
+                        Image imgEscalada = img.getScaledInstance(
+                                TAMANO_CASILLA,
+                                TAMANO_CASILLA,
+                                Image.SCALE_SMOOTH
+                        );
+                        iconoFrente = new ImageIcon(imgEscalada);
+                    } catch (Exception e) {
+                        System.err.println("Error cargando imagen: " + imagen);
                     }
-
-                    Image imgEscalada = img.getScaledInstance(
-                            TAMANO_CASILLA,
-                            TAMANO_CASILLA,
-                            Image.SCALE_SMOOTH
-                    );
-
-                    JButton button = new JButton();
-                    ImageIcon iconoFrente = new ImageIcon(imgEscalada);
-                    iconosFrente[i][j] = iconoFrente;
-                    button.setIcon(iconoFrente);
-                    button.setFocusPainted(false);
-                    button.setBorderPainted(true);
-                    button.setContentAreaFilled(false);
-                    button.setFont(new Font("Arial", Font.BOLD, 24));
+                    
+                    // Crear icono trasera (null para que muestre "?")
+                    iconoTrasera = null;
+                    
+                    // Polimorfismo: alternar entre CartaPokemon y CartaEspecial
+                    Carta carta;
+                    if ((i + j) % 2 == 0) {
+                        // Cartas pares son Pokemon
+                        carta = new CartaPokemon(imagen, iconoFrente, iconoTrasera);
+                    } else {
+                        // Cartas impares son Especiales
+                        carta = new CartaEspecial(imagen, iconoFrente, iconoTrasera);
+                    }
+                    
+                    carta.setFocusPainted(false);
+                    carta.setBorderPainted(true);
+                    carta.setContentAreaFilled(false);
+                    carta.setFont(new Font("Arial", Font.BOLD, 24));
 
                     int fila = i;
                     int columna = j;
-                    button.addActionListener(e -> manejarClick(fila, columna));
+                    carta.addActionListener(e -> manejarClick(fila, columna));
 
-                    botones[i][j] = button;
-                    add(button);
+                    cartas[i][j] = carta;
+                    add(carta);
                 } catch (Exception e) {
-                    System.err.println("Error inicializando botón [" + i + "][" + j + "]: " + e.getMessage());
-                    // Crear botón por defecto en caso de error
-                    JButton buttonDefault = new JButton("?");
-                    buttonDefault.setFont(new Font("Arial", Font.BOLD, 24));
-                    botones[i][j] = buttonDefault;
-                    add(buttonDefault);
+                    System.err.println("Error inicializando carta en [" + i + "][" + j + "]: " + e.getMessage());
+                    // Crear carta por defecto en caso de error
+                    Carta cartaDefault = new CartaEspecial("error.png", null, null);
+                    cartas[i][j] = cartaDefault;
+                    add(cartaDefault);
                 }
             }
         }
@@ -93,7 +106,7 @@ public class TableroPanel extends JPanel {
     private void manejarClick(int fila, int columna) {
         System.out.println("Click en fila=" + fila + ", columna=" + columna);
         
-        if (bloqueado || !botones[fila][columna].isEnabled()) {
+        if (bloqueado || !cartas[fila][columna].isEnabled()) {
             return;
         }
         // Bloquear click si la carta ya está revelada permanentemente
@@ -106,12 +119,12 @@ public class TableroPanel extends JPanel {
             return;
         }
 
-        JButton boton = botones[fila][columna];
+        // Polimorfismo: usar método abstracto mostrarCarta()
+        Carta carta = cartas[fila][columna];
         String imagenActual = juego.getNombreImagenEnPosicion(fila, columna);
         System.out.println("Mostrando carta en [" + fila + "][" + columna + "] = " + imagenActual);
         
-        boton.setText("");
-        boton.setIcon(iconosFrente[fila][columna]);
+        carta.mostrarCarta();
         if (filaSeleccionada == -1) {
             filaSeleccionada = fila;
             columnaSeleccionada = columna;
@@ -140,8 +153,8 @@ public class TableroPanel extends JPanel {
         
         if (esPareja) {
             // Las cartas forman pareja, se quedan visibles y se deshabilitan
-            botones[fila1][col1].setEnabled(false);
-            botones[fila][columna].setEnabled(false);
+            cartas[fila1][col1].setEnabled(false);
+            cartas[fila][columna].setEnabled(false);
             bloqueado = false;
             
             // Actualizar UI después de confirmar pareja
@@ -159,12 +172,13 @@ public class TableroPanel extends JPanel {
         } else {
             // No forman pareja, ocultar después de un delay
             Timer ocultarTimer = new Timer(800, e -> {
+                // Polimorfismo: usar método abstracto ocultarCarta()
                 // Solo ocultar si no están reveladas en el juego
                 if (!juego.estaRevelada(fila1, col1)) {
-                    ocultarCarta(fila1, col1);
+                    cartas[fila1][col1].ocultarCarta();
                 }
                 if (!juego.estaRevelada(fila, columna)) {
-                    ocultarCarta(fila, columna);
+                    cartas[fila][columna].ocultarCarta();
                 }
                 bloqueado = false;
                 
@@ -205,41 +219,49 @@ public class TableroPanel extends JPanel {
     }
 
     private void mostrarTodasLasCartas() {
+        // Polimorfismo: todas las cartas responden al mismo método
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                botones[i][j].setText("");
-                botones[i][j].setIcon(iconosFrente[i][j]);
-            }
-        }
-    }
-
-    private void ocultarTodasLasCartas() {
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                if (!juego.estaRevelada(i, j)) {
-                    ocultarCarta(i, j);
-                    botones[i][j].setEnabled(true);
-                } else {
-                    // Si ya está revelada, deshabilitarla para que no se pueda clickear
-                    botones[i][j].setEnabled(false);
+                try {
+                    cartas[i][j].mostrarCarta();
+                } catch (Exception e) {
+                    System.err.println("Error mostrando carta [" + i + "][" + j + "]: " + e.getMessage());
                 }
             }
         }
     }
 
-    private void ocultarCarta(int fila, int columna) {
-        botones[fila][columna].setIcon(null);
-        botones[fila][columna].setText("?");
+    private void ocultarTodasLasCartas() {
+        // Polimorfismo: todas las cartas responden al mismo método
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                try {
+                    if (!juego.estaRevelada(i, j)) {
+                        cartas[i][j].ocultarCarta();
+                        cartas[i][j].setEnabled(true);
+                    } else {
+                        // Si ya está revelada, deshabilitarla para que no se pueda clickear
+                        cartas[i][j].setEnabled(false);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error ocultando carta [" + i + "][" + j + "]: " + e.getMessage());
+                }
+            }
+        }
     }
 
     private void habilitarClicks() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                // Solo habilitar si la carta no está revelada
-                if (!juego.estaRevelada(i, j)) {
-                    botones[i][j].setEnabled(true);
-                } else {
-                    botones[i][j].setEnabled(false);
+                try {
+                    // Solo habilitar si la carta no está revelada
+                    if (!juego.estaRevelada(i, j)) {
+                        cartas[i][j].setEnabled(true);
+                    } else {
+                        cartas[i][j].setEnabled(false);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error habilitando carta [" + i + "][" + j + "]: " + e.getMessage());
                 }
             }
         }
@@ -248,7 +270,11 @@ public class TableroPanel extends JPanel {
     private void deshabilitarClicks() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                botones[i][j].setEnabled(false);
+                try {
+                    cartas[i][j].setEnabled(false);
+                } catch (Exception e) {
+                    System.err.println("Error deshabilitando carta [" + i + "][" + j + "]: " + e.getMessage());
+                }
             }
         }
     }
