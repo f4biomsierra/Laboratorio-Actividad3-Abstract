@@ -184,7 +184,7 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     public boolean verificarParejas(Carta carta1, Carta carta2) {
        if (carta1 == carta2) return false;
 
-    if (carta1.getIdImagen() == carta2.getIdImagen()) {
+    if (carta1.getIdImagen().equals(carta2.getIdImagen())) {
         if (turnoJ1) puntosJ1++;
         else puntosJ2++;
         return true;
