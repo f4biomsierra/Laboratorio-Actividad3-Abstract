@@ -1,5 +1,6 @@
 package JuegodeMemoria.ui;
 
+import JuegodeMemoria.JuegoMemoria;
 import javax.swing.*;
 import java.awt.*;
 
@@ -7,6 +8,7 @@ public class LoginPanel extends JPanel {
     private JTextField txtPlayer1;
     private  JTextField txtPlayer2;
     private MainFrame frame;
+    private JuegoMemoria juego;
     public LoginPanel(MainFrame frame) {
         this.frame = frame;
         setLayout(new GridBagLayout());
