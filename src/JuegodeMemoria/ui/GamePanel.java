@@ -57,48 +57,49 @@ public class GamePanel extends JPanel implements TableroListener {
         });
     }
     
-    private void iniciarTemporizador() {
-        temporizador = new Timer(1000, e -> {
-            if (jugadorActual == 0) {
-                tiempoJ1++;
-            } else {
-                tiempoJ2++;
-            }
-
-            contadorLabel.setText(
-                    "Tiempo " + juego.getNombreJugador(0) + ": " + tiempoJ1 + "s | "
-                    + juego.getNombreJugador(1) + ": " + tiempoJ2 + "s"
-            );
-        });
-
-        temporizador.start();
-    }
-    
     @Override
     public void onTurnoCambio(String nombre) {
         actualizarTurno(nombre);
-        if (temporizador.isRunning()) {
+        
+        // Detener temporizador anterior
+        if (temporizador != null && temporizador.isRunning()) {
             temporizador.stop();
         }
 
-        if (nombre.equals(juego.getNombreJugador(0))) {
+        // Determinar jugador actual basándose en el nombre
+        String nombreJ1 = juego.getNombreJugador(0);
+        String nombreJ2 = juego.getNombreJugador(1);
+        
+        if (nombre.equals(nombreJ1)) {
             jugadorActual = 0;
-        } else if (nombre.equals(juego.getNombreJugador(1))) {
+        } else if (nombre.equals(nombreJ2)) {
             jugadorActual = 1;
         } else {
-            jugadorActual = -1;
+            // Si no coincide, usar el estado del juego
+            jugadorActual = juego.isTurnoJ1() ? 0 : 1;
+        }
 
-            if (jugadorActual != -1) {
-                temporizador.start();
-            }
+        // Iniciar temporizador del nuevo jugador
+        if (jugadorActual != -1 && temporizador != null) {
+            temporizador.start();
         }
     }
+    public void inicializarTablero() {
+        // Inicializar el tablero (generar y crear botones)
+        tableroPanel.inicializarTablero();
+    }
+    
     public void iniciarPreview(){
+        // El tablero ya está inicializado, solo iniciar el preview
         tableroPanel.iniciarPreview();
         actualizarTurno(juego.getTurnoActual());
         actualizarPuntajes();
         crearTemporizador();
-        iniciarTemporizador();
+        // Iniciar temporizador del primer jugador
+        jugadorActual = juego.isTurnoJ1() ? 0 : 1;
+        if (temporizador != null) {
+            temporizador.start();
+        }
     }
 
     public void refrescarTurno() {
@@ -125,6 +126,55 @@ public class GamePanel extends JPanel implements TableroListener {
     @Override
     public void onPuntajesCambio() {
         actualizarPuntajes();
+        // Verificar si el juego terminó
+        if (juego.juegoTerminado()) {
+            mostrarGanador();
+        }
+    }
+    
+    private void mostrarGanador() {
+        try {
+            juego.finalizarJuego();
+            
+            // Detener temporizador
+            if (temporizador != null && temporizador.isRunning()) {
+                temporizador.stop();
+            }
+            
+            String mensaje;
+            String j1 = juego.getNombreJugador(0);
+            String j2 = juego.getNombreJugador(1);
+            int puntosJ1 = juego.getPuntosJ1();
+            int puntosJ2 = juego.getPuntosJ2();
+            
+            if (juego.hayEmpate()) {
+                mensaje = String.format(
+                    "¡EMPATE!\n\n%s: %d aciertos - Tiempo: %ds\n%s: %d aciertos - Tiempo: %ds",
+                    j1, puntosJ1, tiempoJ1,
+                    j2, puntosJ2, tiempoJ2
+                );
+            } else {
+                var ganador = juego.getGanador();
+                if (ganador != null) {
+                    int tiempoGanador = ganador.getNombre().equals(j1) ? tiempoJ1 : tiempoJ2;
+                    mensaje = String.format(
+                        "¡GANADOR!\n\n%s\n\nAciertos: %d\nTiempo: %ds",
+                        ganador.getNombre(),
+                        ganador.getAciertos(),
+                        tiempoGanador
+                    );
+                } else {
+                    mensaje = "Juego terminado";
+                }
+            }
+            
+            JOptionPane.showMessageDialog(this, mensaje, "Fin del Juego", 
+                JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            System.err.println("Error mostrando ganador: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al determinar ganador", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 

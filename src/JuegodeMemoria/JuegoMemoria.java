@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.*;
-import java.awt.*;
 
 
 public class JuegoMemoria implements ControlesJuego, LogicaJuego{
@@ -77,12 +75,16 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
         Collections.shuffle(parejas);
 
         int index = 0;
+        System.out.println("=== TABLERO GENERADO ===");
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 tablero[i][j] = parejas.get(index++);
                 cartaRevelada[i][j] = false;
+                System.out.print("[" + i + "][" + j + "]=" + tablero[i][j].substring(0, Math.min(8, tablero[i][j].length())) + " ");
             }
+            System.out.println();
         }
+        System.out.println("========================");
     }
     
      public String getTurnoActual(){
@@ -94,21 +96,46 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
     }
     
     public boolean pareja(int fila1, int columna1, int fila2, int columna2){
-        if ((fila1 == fila2 && columna1 == columna2) || cartaRevelada[fila1][columna1] || cartaRevelada[fila2][columna2]) {
+        // Validar que no sean la misma carta
+        if (fila1 == fila2 && columna1 == columna2) {
             return false;
         }
         
-        if(tablero[fila1][columna1].equals(tablero[fila2][columna2])){
-            cartaRevelada[fila1][columna1]=true;
-            cartaRevelada[fila2][columna2]=true;
+        // Validar que las cartas no estén ya reveladas
+        if (cartaRevelada[fila1][columna1] || cartaRevelada[fila2][columna2]) {
+            return false;
+        }
+        
+        // Obtener nombres de las imágenes
+        String imagen1 = tablero[fila1][columna1];
+        String imagen2 = tablero[fila2][columna2];
+        
+        // Comparar las imágenes (sin espacios en blanco)
+        boolean sonIguales = imagen1 != null && imagen2 != null && 
+                            imagen1.trim().equals(imagen2.trim());
+        
+        if(sonIguales){
+            // Son pareja - marcar como reveladas
+            cartaRevelada[fila1][columna1] = true;
+            cartaRevelada[fila2][columna2] = true;
             
-            if(turnoJ1)
+            // Actualizar puntajes según el turno actual
+            if(turnoJ1) {
                 puntosJ1++;
-            else puntosJ2++;
+                if (jugadores != null && jugadores[0] != null) {
+                    jugadores[0].agregarAciertos();
+                }
+            } else {
+                puntosJ2++;
+                if (jugadores != null && jugadores[1] != null) {
+                    jugadores[1].agregarAciertos();
+                }
+            }
+            // NO cambiar turno cuando se forma pareja - el jugador sigue
             return true;
         } else {
+            // No son pareja - cambiar turno
             cambiarTurno();
-            turnoJ1 = !turnoJ1;
             return false;
         }
     }
@@ -173,26 +200,40 @@ public class JuegoMemoria implements ControlesJuego, LogicaJuego{
 
     @Override
     public void finalizarJuego() {
-        if (juegoTerminado()) {
-        String ganador = (puntosJ1 > puntosJ2) ? jugadores[0].getNombre() : jugadores[1].getNombre();
-        if (puntosJ1 == puntosJ2) System.out.println("¡Empate!");
-        else System.out.println("El ganador es: " + ganador);
+        // Método para finalizar el juego, la lógica de mostrar ganador está en la UI
     }
+    
+    public Jugador getGanador() {
+        if (!juegoTerminado()) {
+            return null;
+        }
+        if (jugadores == null || jugadores[0] == null || jugadores[1] == null) {
+            return null;
+        }
+        int aciertosJ1 = jugadores[0].getAciertos();
+        int aciertosJ2 = jugadores[1].getAciertos();
+        if (aciertosJ1 > aciertosJ2) {
+            return jugadores[0];
+        } else if (aciertosJ2 > aciertosJ1) {
+            return jugadores[1];
+        }
+        return null; // Empate
+    }
+    
+    public boolean hayEmpate() {
+        if (!juegoTerminado() || jugadores == null || jugadores[0] == null || jugadores[1] == null) {
+            return false;
+        }
+        return jugadores[0].getAciertos() == jugadores[1].getAciertos();
     }
 
     @Override
     public boolean verificarParejas(Carta carta1, Carta carta2) {
-       if (carta1 == carta2) return false;
-
-    if (carta1.getIdImagen().equals(carta2.getIdImagen())) {
-        if (turnoJ1) puntosJ1++;
-        else puntosJ2++;
-        return true;
-    } else {
-        cambiarTurno();
-        return false;
-    } 
-}
+        if (carta1 == null || carta2 == null) {
+            return false;
+        }
+        return carta1.getIdImagen().equals(carta2.getIdImagen());
+    }
 
     @Override
     public boolean juegoTerminado() {

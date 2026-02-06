@@ -36,11 +36,24 @@ public class MainFrame extends JFrame {
     }
 
     public void showGame() {
-        cardLayout.show(mainPanel, GAME);
-        SwingUtilities.invokeLater(() -> {
+        try {
+            // Inicializar juego y tablero ANTES de mostrar la vista
+            juego.iniciarJuego();
+            gamePanel.inicializarTablero();
             gamePanel.refrescarTurno();
-            gamePanel.iniciarPreview();
-        });
+            
+            // Ahora mostrar el juego (el tablero ya está listo)
+            cardLayout.show(mainPanel, GAME);
+            
+            // Iniciar preview después de un pequeño delay para que se vea el tablero primero
+            SwingUtilities.invokeLater(() -> {
+                gamePanel.iniciarPreview();
+            });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al iniciar el juego: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public JuegoMemoria getJuego() {

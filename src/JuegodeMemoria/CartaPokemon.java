@@ -5,7 +5,6 @@
 package JuegodeMemoria;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,12 +19,19 @@ public class CartaPokemon extends Carta{
     public void mostrarCarta(){
         cartaRevelada=true;
         this.setIcon(parteFrontal);
-        JOptionPane.showMessageDialog(this, "Carta descubierta: "+getIdImagen());
+        this.setText(""); // Limpiar texto si existe
+        // No mostrar JOptionPane para no interrumpir el juego
     }
     
     @Override
     public void ocultarCarta(){
         cartaRevelada=false;
-        this.setIcon(parteTrasera);
-    } 
+        if (parteTrasera != null) {
+            this.setIcon(parteTrasera);
+            this.setText("");
+        } else {
+            this.setIcon(null);
+            this.setText("?");
+        }
+    }
 }

@@ -1,34 +1,37 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package JuegodeMemoria;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  *
- * @author emyca
+ * @author Fabio Sierra
  */
-public class CartaEspecial extends Carta{
-    public CartaEspecial(String idImagen, ImageIcon parteFrontal, ImageIcon parteTrasera){
+public class CartaEspecial extends Carta {
+    
+    public CartaEspecial(String idImagen, ImageIcon parteFrontal, ImageIcon parteTrasera) {
         super(idImagen, parteFrontal, parteTrasera);
     }
     
     @Override
-    public void mostrarCarta(){
-        cartaRevelada=true;
+    public void mostrarCarta() {
+        cartaRevelada = true;
         this.setIcon(parteFrontal);
-        JOptionPane.showMessageDialog(this, "¡Encontraste un Legendario!\nCarta Especial: "+getIdImagen());
+        this.setText(""); // Limpiar texto si existe
     }
     
     @Override
-    public void ocultarCarta(){
-        cartaRevelada=false;
-        this.setIcon(parteTrasera);
+    public void ocultarCarta() {
+        cartaRevelada = false;
+        if (parteTrasera != null) {
+            this.setIcon(parteTrasera);
+        } else {
+            this.setIcon(null);
+            this.setText("?");
+        }
     }
-    
-    
-
 }

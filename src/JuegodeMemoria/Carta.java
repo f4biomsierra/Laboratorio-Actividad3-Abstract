@@ -19,7 +19,12 @@ public abstract class Carta extends JButton {
         this.idImagen=idImagen;
         this.parteTrasera=parteTrasera;
         this.parteFrontal=parteFrontal;
-        this.setIcon(parteTrasera);
+        if (parteTrasera != null) {
+            this.setIcon(parteTrasera);
+        } else {
+            this.setIcon(null);
+            this.setText("?");
+        }
     }
     
     public abstract void mostrarCarta();
