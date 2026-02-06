@@ -20,4 +20,12 @@ public class Jugador {
     public void agregarAciertos(){
         cant_aciertos++;
     }
+    
+    public int getAciertos(){
+        return cant_aciertos;
+    }
+    
+    public String getNombre(){
+        return nombre;
+    }
 }
