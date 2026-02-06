@@ -11,8 +11,8 @@ import javax.swing.JOptionPane;
  *
  * @author emyca
  */
-public class CartaPokemon extends Carta{
-    public CartaPokemon(String idImagen, ImageIcon parteFrontal, ImageIcon parteTrasera){
+public class CartaEspecial extends Carta{
+    public CartaEspecial(String idImagen, ImageIcon parteFrontal, ImageIcon parteTrasera){
         super(idImagen, parteFrontal, parteTrasera);
     }
     
@@ -20,12 +20,15 @@ public class CartaPokemon extends Carta{
     public void mostrarCarta(){
         cartaRevelada=true;
         this.setIcon(parteFrontal);
-        JOptionPane.showMessageDialog(this, "Carta descubierta: "+getIdImagen());
+        JOptionPane.showMessageDialog(this, "¡Encontraste un Legendario!\nCarta Especial: "+getIdImagen());
     }
     
     @Override
     public void ocultarCarta(){
         cartaRevelada=false;
         this.setIcon(parteTrasera);
-    } 
+    }
+    
+    
+
 }
