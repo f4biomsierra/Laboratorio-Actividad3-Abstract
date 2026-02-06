@@ -1,5 +1,7 @@
 package JuegodeMemoria.ui;
 
+import JuegodeMemoria.JuegoMemoria;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,17 +11,19 @@ public class MainFrame extends JFrame {
     public static final String GAME = "GAME";
     CardLayout cardLayout;
     JPanel mainPanel;
-    JPanel gamePanel;
+    private final JuegoMemoria juego;
+    private final GamePanel gamePanel;
 
     public MainFrame() {
         setTitle("Memorizacion");
         setSize(600,600);
 
+        juego = new JuegoMemoria();
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-        gamePanel = new GamePanel();
         mainPanel.add(new LoginPanel(this), LOGIN);
-        mainPanel.add(new GamePanel(), GAME);
+        gamePanel = new GamePanel(juego);
+        mainPanel.add(gamePanel, GAME);
 
         add(mainPanel);
 
@@ -33,5 +37,13 @@ public class MainFrame extends JFrame {
 
     public void showGame() {
         cardLayout.show(mainPanel, GAME);
+        SwingUtilities.invokeLater(() -> {
+            gamePanel.refrescarTurno();
+            gamePanel.iniciarPreview();
+        });
+    }
+
+    public JuegoMemoria getJuego() {
+        return juego;
     }
 }
