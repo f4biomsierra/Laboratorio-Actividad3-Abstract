@@ -5,10 +5,32 @@
  */
 package JuegodeMemoria;
 
-/**
- *
- * @author Fabio Sierra
- */
-public class Carta {
+import javax.swing.*;
+import java.awt.*;
+
+
+public abstract class Carta extends JButton {
+    protected String idImagen;
+    protected boolean cartaRevelada=false;
+    protected ImageIcon parteFrontal;
+    protected ImageIcon parteTrasera;
     
+    public Carta(String idImagen, boolean cartaRevelada, ImageIcon parteFrontal, ImageIcon parteTrasera){
+        this.idImagen=idImagen;
+        this.parteTrasera=parteTrasera;
+        this.parteFrontal=parteFrontal;
+        this.setIcon(parteTrasera);
+    }
+    
+    public abstract void mostrarCarta();
+    
+    public abstract void ocultarCarta();
+    
+    public boolean cartaRevelada(){
+        return cartaRevelada;
+    }
+    
+    public String getIdImagen(){
+        return idImagen;
+    }
 }
